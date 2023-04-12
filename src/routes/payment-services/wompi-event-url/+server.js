@@ -25,11 +25,24 @@ export async function POST({ request }) {
     console.info('WOMPI TRANSACTION REFERENCE', wompiTransactionReference);
     console.info('WOMPI TRANSACTION STATUS', wompiTransactionStatus);
 
-    const { data: paymentData } = await supabase
+    const { data: allPaymentData, error: paymentsRetrievalError } = await supabase
+    .from('payments')
+    .select();
+    if (paymentsRetrievalError) {
+        console.info('PAYMENTS RETRIEVAL ERROR', paymentsRetrievalError);
+        return fail(500);
+    }
+    console.info('DATABASE PAYMENTS DATA', allPaymentData);
+
+    const { data: paymentData, error: paymentRetrievalError } = await supabase
     .from('payments')
     .select('id, event_identifier, status, client_info')
     .eq('id', wompiTransactionReference)
     .single();
+    if (paymentRetrievalError) {
+        console.info('PAYMENT RETRIEVAL ERROR', paymentRetrievalError);
+        return fail(500);
+    }
     console.info('DATABASE PAYMENT DATA', paymentData);
 
     const paymentInfo = wompiEvent.data.transaction;
