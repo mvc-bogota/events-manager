@@ -30,9 +30,10 @@ export async function POST({ request }) {
     .select('id, event_identifier, status, client_info')
     .eq('id', wompiTransactionReference)
     .single();
+    console.info('DATABASE PAYMENT DATA', paymentData);
 
     const paymentInfo = wompiEvent.data.transaction;
-    console.info('PAYMENT INFO', paymentInfo);
+    console.info('WOMPI EVENT PAYMENT INFO', paymentInfo);
 
     const { error: updatePaymentInfoError } = await supabase
     .from('payments')
