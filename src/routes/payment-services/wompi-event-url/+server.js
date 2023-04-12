@@ -30,7 +30,7 @@ export async function POST({ request }) {
     .select();
     if (paymentsRetrievalError) {
         console.info('PAYMENTS RETRIEVAL ERROR', paymentsRetrievalError);
-        return fail(500);
+        throw error(500, 'Error retrieving payments.');
     }
     console.info('DATABASE PAYMENTS DATA', allPaymentData);
 
@@ -41,7 +41,7 @@ export async function POST({ request }) {
     .single();
     if (paymentRetrievalError) {
         console.info('PAYMENT RETRIEVAL ERROR', paymentRetrievalError);
-        return fail(500);
+        throw error(500, 'Error retrieving payment.');
     }
     console.info('DATABASE PAYMENT DATA', paymentData);
 
@@ -58,7 +58,7 @@ export async function POST({ request }) {
 
     if (updatePaymentInfoError) {
         console.info('PAYMENT INFO UPDATE ERROR', updatePaymentInfoError);
-        return fail(500);
+        throw error(500, 'Error updating payment info.');
     }
 
     if(wompiTransactionStatus === PaymentStatus.Approved) {
@@ -92,7 +92,7 @@ export async function POST({ request }) {
 
             if (updatePaymenStatusError) {
                 console.info('PAYMENT STATUS UPDATE ERROR', updatePaymenStatusError);
-                return fail(500);
+                throw error(500, 'Error updating payment status.');
             }
         });
     }
