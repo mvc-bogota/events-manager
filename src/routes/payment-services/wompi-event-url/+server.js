@@ -1,4 +1,4 @@
-import { error, fail } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { supabase } from '$lib/supabaseClient';
 import { validateEventAuthenticity } from '$lib/wompi';
 import { sendConfirmationEmail } from '$lib/server/email-generation';
