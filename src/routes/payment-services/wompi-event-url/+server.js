@@ -3,8 +3,10 @@ import { supabase } from '$lib/supabaseClient';
 import { validateEventAuthenticity } from '$lib/wompi';
 import { sendConfirmationEmail } from '$lib/server/email-generation';
 import { PaymentStatus, EventIdentifiers } from '$lib/enums';
+import { createClient } from '@supabase/supabase-js';
 
-import { WOMPI_EVENT_KEY } from '$env/static/private';
+import { WOMPI_EVENT_KEY, SUPABASE_CONVIVIO_SERVICE_ROLE_KEY } from '$env/static/private';
+import { PUBLIC_SUPABASE_CONVIVIO_URL } from '$env/static/public';
 
 const confirmationEmailTemplateId = 'd-2a98e94c9bcd499a96cd9c9a42acaf1f';
 
@@ -56,6 +58,19 @@ export async function POST({ request }) {
         let verifiedSenderEmail = 'noticiasmvcbog@gmail.com';
         if(paymentData.event_identifier === EventIdentifiers.Convivio){
             verifiedSenderEmail = 'convivio@sanjose.edu.co';
+
+            const supabaseForConvivio = createClient(PUBLIC_SUPABASE_CONVIVIO_URL, SUPABASE_CONVIVIO_SERVICE_ROLE_KEY);
+            const { error: updateProfileError } = await supabaseForConvivio
+            .from('profiles')
+            .update({
+                payment_completed: true
+            })
+            .eq('email', paymentData.client_info.email);
+
+            if(updateProfileError){
+                console.info('PROFILE UPDATE ERROR', updateProfileError);
+                throw error(500, 'Error updating profile.');
+            }
         }
 
         const { data: eventData } = await supabase
