@@ -25,15 +25,6 @@ export async function POST({ request }) {
     console.info('WOMPI TRANSACTION REFERENCE', wompiTransactionReference);
     console.info('WOMPI TRANSACTION STATUS', wompiTransactionStatus);
 
-    const { data: allPaymentData, error: paymentsRetrievalError } = await supabase
-    .from('payments')
-    .select();
-    if (paymentsRetrievalError) {
-        console.info('PAYMENTS RETRIEVAL ERROR', paymentsRetrievalError);
-        throw error(500, 'Error retrieving payments.');
-    }
-    console.info('DATABASE PAYMENTS DATA', allPaymentData);
-
     const { data: paymentData, error: paymentRetrievalError } = await supabase
     .from('payments')
     .select('id, event_identifier, status, client_info')
