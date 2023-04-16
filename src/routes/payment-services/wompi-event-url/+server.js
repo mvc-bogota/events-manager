@@ -75,7 +75,7 @@ export async function POST({ request }) {
 
         const { data: eventData } = await supabase
         .from('events')
-        .select('event_identifier, event_name, location_name, location_address')
+        .select('event_identifier, event_name, location_name, location_address, event_dates, event_time')
         .eq('event_identifier', paymentData.event_identifier)
         .single();
 
@@ -87,7 +87,9 @@ export async function POST({ request }) {
             paymentData.client_info.full_name,
             eventData.event_name,
             eventData.location_name,
-            eventData.location_address
+            eventData.location_address,
+            eventData.event_dates,
+            eventData.event_time
         ).then(async () => {
             const { error: updatePaymenStatusError } = await supabase
             .from('payments')
