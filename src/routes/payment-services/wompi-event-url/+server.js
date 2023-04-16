@@ -22,37 +22,52 @@ export async function POST({ request }) {
         throw error(403, 'Invalid event.');
     }
 
-    const wompiTransactionReference = wompiEvent.data.transaction.reference;
-    const wompiTransactionStatus = wompiEvent.data.transaction.status;
-    console.info('WOMPI TRANSACTION REFERENCE', wompiTransactionReference);
-    console.info('WOMPI TRANSACTION STATUS', wompiTransactionStatus);
-
-    const { data: paymentData, error: paymentRetrievalError } = await supabase
-    .from('payments')
-    .select('id, event_identifier, status, client_info')
-    .eq('id', wompiTransactionReference)
-    .single();
-    if (paymentRetrievalError) {
-        console.info('PAYMENT RETRIEVAL ERROR', paymentRetrievalError);
-        throw error(500, 'Error retrieving payment.');
-    }
-    console.info('DATABASE PAYMENT DATA', paymentData);
-
     const paymentInfo = wompiEvent.data.transaction;
     console.info('WOMPI EVENT PAYMENT INFO', paymentInfo);
+    const wompiTransactionReference = paymentInfo.reference;
+    const wompiTransactionStatus = paymentInfo.status;
 
-    const { error: updatePaymentInfoError } = await supabase
-    .from('payments')
-    .update({
-        status: wompiTransactionStatus,
-        payment_info: paymentInfo 
-    })
-    .eq('id', wompiTransactionReference);
+    if (wompiTransactionReference.startsWith(EventIdentifiers.Convivio)) {
+        const { data: paymentData, error: paymentRetrievalError } = await supabase
+        .from('payments')
+        .select('id, event_identifier, status, client_info')
+        .eq('id', wompiTransactionReference)
+        .single();
 
-    if (updatePaymentInfoError) {
-        console.info('PAYMENT INFO UPDATE ERROR', updatePaymentInfoError);
-        throw error(500, 'Error updating payment info.');
+        if (paymentRetrievalError) {
+            console.info('PAYMENT RETRIEVAL ERROR', paymentRetrievalError);
+            throw error(500, 'Error retrieving payment.');
+        }
+        console.info('DATABASE PAYMENT DATA', paymentData);
+
+        const { error: updatePaymentInfoError } = await supabase
+        .from('payments')
+        .update({
+            status: wompiTransactionStatus,
+            payment_info: paymentInfo 
+        })
+        .eq('id', wompiTransactionReference);
+
+        if (updatePaymentInfoError) {
+            console.info('PAYMENT INFO UPDATE ERROR', updatePaymentInfoError);
+            throw error(500, 'Error updating payment info.');
+        }
+    else {
+        const { error: paymentInsertError } = await supabaseForEventsManager
+        .from('payments')
+        .insert({
+            id: paymentId,
+            event_identifier: eventId,
+            client_info: paymentInfo.customer_data,
+            payment_info: paymentInfo
+        });
+
+        if (paymentInsertError) {
+            console.info('PAYMENT INSERT ERROR', paymentInsertError);
+            throw error(500, 'Error creating new payment in database.');
+        }
     }
+    
 
     if(wompiTransactionStatus === PaymentStatus.Approved) {
         let verifiedSenderEmail = 'noticiasmvcbog@gmail.com';
