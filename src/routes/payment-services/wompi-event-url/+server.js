@@ -56,18 +56,26 @@ export async function POST({ request }) {
         }
         paymentObject = paymentData;
 
-        const { data: eventData } = await supabase
+        const { data: eventData, error: retrieveEventDataError } = await supabase
         .from('events')
         .select('event_identifier, event_name, location_name, location_address, event_dates, event_time')
         .eq('event_identifier', paymentObject.event_identifier)
         .single();
 
+        if (retrieveEventDataError) {
+            console.info('RETRIEVE EVENT DATA ERROR', retrieveEventDataError);
+            throw error(500, 'Error retrieving event data.');
+        }
         eventObject = eventData;
     } else {
-        const { data: eventsData } = await supabase
+        const { data: eventsData, error: retrieveEventsDataError } = await supabase
         .from('events')
         .select('event_identifier, event_name, location_name, location_address, event_dates, event_time');
 
+        if (retrieveEventsDataError) {
+            console.info('RETRIEVE EVENTs DATA ERROR', retrieveEventsDataError);
+            throw error(500, 'Error retrieving events data.');
+        }
         eventObject = eventsData.data.find( event => wompiTransactionReference.startsWith(event.event_identifier) );
 
         const { data: paymentData, error: paymentInsertError } = await supabase
