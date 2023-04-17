@@ -78,7 +78,7 @@ export async function POST({ request }) {
             throw error(500, 'Error retrieving events data.');
         }
         console.info('DATABASE EVENTS DATA', eventsData);
-        eventObject = eventsData.data.find( event => wompiTransactionReference.startsWith(event.event_identifier) );
+        eventObject = eventsData.find( event => wompiTransactionReference.startsWith(event.event_identifier) );
 
         paymentInfo.customer_data.email = paymentInfo.customer_email;
         const { data: paymentData, error: paymentInsertError } = await supabase
