@@ -79,6 +79,9 @@ export async function POST({ request }) {
         console.info('DATABASE EVENTS DATA', eventsData);
         eventObject = eventsData.find( event => wompiTransactionReference.startsWith(event.event_identifier) );
 
+        console.info('TEST1', paymentInfo.customer_data);
+        console.info('TEST2', paymentInfo.customer_email);
+
         paymentInfo.customer_data.email = paymentInfo.customer_email;
         const { data: paymentData, error: paymentInsertError } = await supabase
         .from('payments')
