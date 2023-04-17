@@ -89,7 +89,8 @@ export async function POST({ request }) {
             client_info: paymentInfo.customer_data,
             payment_info: paymentInfo
         })
-        .select();
+        .select()
+        .single();
 
         if (paymentInsertError) {
             console.info('PAYMENT INSERT ERROR', paymentInsertError);
