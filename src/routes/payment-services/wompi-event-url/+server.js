@@ -84,6 +84,7 @@ export async function POST({ request }) {
         .from('payments')
         .insert({
             id: wompiTransactionReference,
+            status: wompiTransactionStatus,
             event_identifier: eventObject.event_identifier,
             client_info: paymentInfo.customer_data,
             payment_info: paymentInfo
