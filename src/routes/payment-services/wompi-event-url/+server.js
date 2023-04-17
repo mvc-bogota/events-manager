@@ -117,6 +117,9 @@ export async function POST({ request }) {
             }
         }
 
+        console.info('PAYMENT OBJECT', paymentObject);
+        console.info('EVENT OBJECT', eventObject);
+
         await sendConfirmationEmail(
             wompiTransactionReference,
             verifiedSenderEmail,
