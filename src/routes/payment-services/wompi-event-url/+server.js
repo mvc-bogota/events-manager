@@ -29,6 +29,7 @@ export async function POST({ request }) {
 
     let paymentObject = undefined;
     let eventObject = undefined;
+    console.info('TEST', wompiTransactionReference.startsWith(EventIdentifiers.Convivio));
     if (wompiTransactionReference.startsWith(EventIdentifiers.Convivio)) {
         let { data: paymentData, error: paymentRetrievalError } = await supabase
         .from('payments')
