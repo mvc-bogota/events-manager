@@ -73,9 +73,10 @@ export async function POST({ request }) {
         .select('event_identifier, event_name, location_name, location_address, event_dates, event_time');
 
         if (retrieveEventsDataError) {
-            console.info('RETRIEVE EVENTs DATA ERROR', retrieveEventsDataError);
+            console.info('RETRIEVE EVENTS DATA ERROR', retrieveEventsDataError);
             throw error(500, 'Error retrieving events data.');
         }
+        console.info('DATABASE EVENTS DATA', eventsData);
         eventObject = eventsData.data.find( event => wompiTransactionReference.startsWith(event.event_identifier) );
 
         paymentInfo.customer_data.email = paymentInfo.customer_email;
