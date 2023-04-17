@@ -22,14 +22,13 @@ export async function POST({ request }) {
         throw error(403, 'Invalid event.');
     }
 
-    const paymentInfo = wompiEvent.data.transaction;
+    let paymentInfo = wompiEvent.data.transaction;
     console.info('WOMPI EVENT PAYMENT INFO', paymentInfo);
     const wompiTransactionReference = paymentInfo.reference;
     const wompiTransactionStatus = paymentInfo.status;
 
     let paymentObject = undefined;
     let eventObject = undefined;
-    console.info('TEST', wompiTransactionReference.startsWith(EventIdentifiers.Convivio));
     if (wompiTransactionReference.startsWith(EventIdentifiers.Convivio)) {
         let { data: paymentData, error: paymentRetrievalError } = await supabase
         .from('payments')
