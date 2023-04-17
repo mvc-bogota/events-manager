@@ -27,8 +27,10 @@ export async function POST({ request }) {
     const wompiTransactionReference = paymentInfo.reference;
     const wompiTransactionStatus = paymentInfo.status;
 
+    let paymentObject = undefined;
+    let eventObject = undefined;
     if (wompiTransactionReference.startsWith(EventIdentifiers.Convivio)) {
-        const { data: paymentData, error: paymentRetrievalError } = await supabase
+        let { data: paymentData, error: paymentRetrievalError } = await supabase
         .from('payments')
         .select('id, event_identifier, status, client_info')
         .eq('id', wompiTransactionReference)
@@ -52,26 +54,42 @@ export async function POST({ request }) {
             console.info('PAYMENT INFO UPDATE ERROR', updatePaymentInfoError);
             throw error(500, 'Error updating payment info.');
         }
-    else {
-        const { error: paymentInsertError } = await supabaseForEventsManager
+        paymentObject = paymentData;
+
+        const { data: eventData } = await supabase
+        .from('events')
+        .select('event_identifier, event_name, location_name, location_address, event_dates, event_time')
+        .eq('event_identifier', paymentObject.event_identifier)
+        .single();
+
+        eventObject = eventData;
+    } else {
+        const { data: eventsData } = await supabase
+        .from('events')
+        .select('event_identifier, event_name, location_name, location_address, event_dates, event_time');
+
+        eventObject = eventsData.data.find( event => wompiTransactionReference.startsWith(event.event_identifier) );
+
+        const { data: paymentData, error: paymentInsertError } = await supabase
         .from('payments')
         .insert({
-            id: paymentId,
-            event_identifier: eventId,
+            id: wompiTransactionReference,
+            event_identifier: eventObject.event_identifier,
             client_info: paymentInfo.customer_data,
             payment_info: paymentInfo
-        });
+        })
+        .select();
 
         if (paymentInsertError) {
             console.info('PAYMENT INSERT ERROR', paymentInsertError);
             throw error(500, 'Error creating new payment in database.');
         }
+        paymentObject = paymentData;
     }
-    
 
     if(wompiTransactionStatus === PaymentStatus.Approved) {
         let verifiedSenderEmail = 'noticiasmvcbog@gmail.com';
-        if(paymentData.event_identifier === EventIdentifiers.Convivio){
+        if(paymentObject.event_identifier === EventIdentifiers.Convivio){
             verifiedSenderEmail = 'convivio@sanjose.edu.co';
 
             const supabaseForConvivio = createClient(PUBLIC_SUPABASE_CONVIVIO_URL, SUPABASE_CONVIVIO_SERVICE_ROLE_KEY);
@@ -80,7 +98,7 @@ export async function POST({ request }) {
             .update({
                 payment_completed: true
             })
-            .eq('email', paymentData.client_info.email);
+            .eq('email', paymentObject.client_info.email);
 
             if(updateProfileError){
                 console.info('PROFILE UPDATE ERROR', updateProfileError);
@@ -88,23 +106,17 @@ export async function POST({ request }) {
             }
         }
 
-        const { data: eventData } = await supabase
-        .from('events')
-        .select('event_identifier, event_name, location_name, location_address, event_dates, event_time')
-        .eq('event_identifier', paymentData.event_identifier)
-        .single();
-
         await sendConfirmationEmail(
             wompiTransactionReference,
             verifiedSenderEmail,
             confirmationEmailTemplateId,
-            paymentData.client_info.email,
-            paymentData.client_info.full_name,
-            eventData.event_name,
-            eventData.location_name,
-            eventData.location_address,
-            eventData.event_dates,
-            eventData.event_time
+            paymentObject.client_info.email,
+            paymentObject.client_info.full_name,
+            eventObject.event_name,
+            eventObject.location_name,
+            eventObject.location_address,
+            eventObject.event_dates,
+            eventObject.event_time
         ).then(async () => {
             const { error: updatePaymenStatusError } = await supabase
             .from('payments')
