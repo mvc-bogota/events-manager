@@ -58,7 +58,7 @@ export async function POST({ request }) {
 
         const { data: eventData, error: retrieveEventDataError } = await supabase
         .from('events')
-        .select('event_identifier, event_name, location_name, location_address, event_dates, event_time')
+        .select('event_identifier, event_name, location_name, location_address, event_dates, event_time, needs_ticket_generation')
         .eq('event_identifier', paymentObject.event_identifier)
         .single();
 
@@ -70,7 +70,7 @@ export async function POST({ request }) {
     } else {
         const { data: eventsData, error: retrieveEventsDataError } = await supabase
         .from('events')
-        .select('event_identifier, event_name, location_name, location_address, event_dates, event_time');
+        .select('event_identifier, event_name, location_name, location_address, event_dates, event_time, needs_ticket_generation');
 
         if (retrieveEventsDataError) {
             console.info('RETRIEVE EVENTS DATA ERROR', retrieveEventsDataError);
@@ -99,7 +99,7 @@ export async function POST({ request }) {
         paymentObject = paymentData;
     }
 
-    if(wompiTransactionStatus === PaymentStatus.Approved) {
+    if(wompiTransactionStatus === PaymentStatus.Approved && eventObject.needs_ticket_generation) {
         let verifiedSenderEmail = 'noticiasmvcbog@gmail.com';
         if(paymentObject.event_identifier === EventIdentifiers.Convivio){
             verifiedSenderEmail = 'convivio@sanjose.edu.co';
