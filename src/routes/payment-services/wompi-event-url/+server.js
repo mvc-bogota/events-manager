@@ -37,7 +37,7 @@ export async function POST({ request }) {
         .single();
 
         if (paymentRetrievalError) {
-            console.info('PAYMENT RETRIEVAL ERROR', paymentRetrievalError);
+            console.error('PAYMENT RETRIEVAL ERROR', paymentRetrievalError);
             throw error(500, 'Error retrieving payment.');
         }
         console.info('DATABASE PAYMENT DATA', paymentData);
@@ -51,7 +51,7 @@ export async function POST({ request }) {
         .eq('id', wompiTransactionReference);
 
         if (updatePaymentInfoError) {
-            console.info('PAYMENT INFO UPDATE ERROR', updatePaymentInfoError);
+            console.error('PAYMENT INFO UPDATE ERROR', updatePaymentInfoError);
             throw error(500, 'Error updating payment info.');
         }
         paymentObject = paymentData;
@@ -63,7 +63,7 @@ export async function POST({ request }) {
         .single();
 
         if (retrieveEventDataError) {
-            console.info('RETRIEVE EVENT DATA ERROR', retrieveEventDataError);
+            console.error('RETRIEVE EVENT DATA ERROR', retrieveEventDataError);
             throw error(500, 'Error retrieving event data.');
         }
         eventObject = eventData;
@@ -73,7 +73,7 @@ export async function POST({ request }) {
         .select('event_identifier, event_name, location_name, location_address, event_dates, event_time, needs_ticket_generation');
 
         if (retrieveEventsDataError) {
-            console.info('RETRIEVE EVENTS DATA ERROR', retrieveEventsDataError);
+            console.error('RETRIEVE EVENTS DATA ERROR', retrieveEventsDataError);
             throw error(500, 'Error retrieving events data.');
         }
         console.info('DATABASE EVENTS DATA', eventsData);
@@ -93,7 +93,7 @@ export async function POST({ request }) {
         .single();
 
         if (paymentInsertError) {
-            console.info('PAYMENT INSERT ERROR', paymentInsertError);
+            console.error('PAYMENT INSERT ERROR', paymentInsertError);
             throw error(500, 'Error creating new payment in database.');
         }
         paymentObject = paymentData;
@@ -113,7 +113,7 @@ export async function POST({ request }) {
             .eq('email', paymentObject.client_info.email);
 
             if(updateProfileError){
-                console.info('PROFILE UPDATE ERROR', updateProfileError);
+                console.error('PROFILE UPDATE ERROR', updateProfileError);
                 throw error(500, 'Error updating profile.');
             }
         }
@@ -141,7 +141,7 @@ export async function POST({ request }) {
             .eq('id', wompiTransactionReference);
 
             if (updatePaymenStatusError) {
-                console.info('PAYMENT STATUS UPDATE ERROR', updatePaymenStatusError);
+                console.error('PAYMENT STATUS UPDATE ERROR', updatePaymenStatusError);
                 throw error(500, 'Error updating payment status.');
             }
         });
