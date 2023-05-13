@@ -38,7 +38,9 @@
                 <select name="eventIdentifier" id="event-identifier" required>
                     <option value="" selected>Selecciona el evento</option>
                     {#each data.events as {event_identifier, event_name}}
-                        <option value={event_identifier}>{event_name}</option>
+                        {#if !event_identifier.includes('test')}
+                            <option value={event_identifier}>{event_name}</option>
+                        {/if}
                     {/each}
                 </select>
             </label>
