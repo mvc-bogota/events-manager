@@ -1,5 +1,6 @@
 export const PaymentStatus = {
     Pending: 'PENDING',
+    Declined: 'DECLINED',
     Approved: 'APPROVED',
     EmailSent: 'EMAIL_SENT'
 };
