@@ -17,6 +17,7 @@ export const sendConfirmationEmail = async function (databasePurchaseId, verifie
                     },
                 ],
                 dynamic_template_data: {
+                    payment_reference: databasePurchaseId,
                     full_name: fullName,
                     qr_code_url: generateQrUrl(databasePurchaseId, '/qr-validation'),
                     event_name: eventName,
