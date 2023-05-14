@@ -54,11 +54,9 @@
         margin: 20px 5%;
     }
 
-    .table-container {
-        overflow-x: auto;
-    }
-
     table {
+        table-layout: fixed;
+        width: 100%;
         border: 3px solid black;
         margin-left: auto;
         margin-right: auto;
@@ -71,11 +69,12 @@
     td, th {
         border: 1px solid #ddd;
         padding: 8px;
+        word-wrap: break-word;
     }
 
     th {
         font-family: 'Myriad Pro', sans-serif;
-        text-align: left;
+        text-align: end;
         color: var(--color-primary);
         padding: 0px 10px;
     }
