@@ -56,7 +56,7 @@
 
     table {
         table-layout: fixed;
-        width: 100%;
+        width: 90%;
         border: 3px solid black;
         margin-left: auto;
         margin-right: auto;
