@@ -37,8 +37,9 @@ export const actions = {
             throw error(500, 'Error retrieving event data.');
         }
 
+        let payments = [];
         if(eventIdentifier === EventIdentifiers.Convivio){
-            const { data: payments, error: retrievePaymentsError } = await supabase
+            let { data: currentPayments, error: retrievePaymentsError } = await supabase
             .from('payments')
             .select('id, event_identifier, status, client_info')
             .match({
@@ -51,8 +52,10 @@ export const actions = {
                 console.error('RETRIEVE PAYMENTS ERROR', retrievePaymentsError);
                 throw error(500, 'Error retrieving payments.');
             }
-        else {
-            const { data: payments, error: retrievePaymentsError } = await supabase
+
+            payments = currentPayments;
+        } else {
+            let { data: currentPayments, error: retrievePaymentsError } = await supabase
             .from('payments')
             .select('id, event_identifier, status, client_info')
             .match({
@@ -65,6 +68,7 @@ export const actions = {
                 console.error('RETRIEVE PAYMENTS ERROR', retrievePaymentsError);
                 throw error(500, 'Error retrieving payments.');
             }
+            payments = currentPayments;
         }
 
         console.log(payments);
