@@ -133,15 +133,15 @@ export async function POST({ request }) {
             eventObject.event_dates,
             eventObject.event_time
         ).then(async () => {
-            const { error: updatePaymenStatusError } = await supabase
+            const { error: updatePaymentStatusError } = await supabase
             .from('payments')
             .update({
                 status: PaymentStatus.EmailSent
             })
             .eq('id', wompiTransactionReference);
 
-            if (updatePaymenStatusError) {
-                console.error('PAYMENT STATUS UPDATE ERROR', updatePaymenStatusError);
+            if (updatePaymentStatusError) {
+                console.error('PAYMENT STATUS UPDATE ERROR', updatePaymentStatusError);
                 throw error(500, 'Error updating payment status.');
             }
         });
