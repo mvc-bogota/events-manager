@@ -100,21 +100,19 @@ export const actions = {
                     eventObject.event_dates,
                     eventObject.event_time
                 ).then(async () => {
-                    console.log ('CURRENT STATUS: ' + payment.status);
-                    if (payment.status == PaymentStatus.Approved) {
-                        const { error: updatePaymentStatusError } = await supabase
-                        .from('payments')
-                        .update({
-                            status: PaymentStatus.EmailSent
-                        })
-                        .eq('id', payment.id);
+                    const { error: updatePaymentStatusError } = await supabase
+                    .from('payments')
+                    .update({
+                        status: PaymentStatus.EmailSent
+                    })
+                    .eq('id', payment.id);
 
-                        if (updatePaymentStatusError) {
-                            console.error('UPDATE PAYMENT STATUS ERROR', updatePaymentStatusError);
-                            throw error(500, 'Error updating payment status.');
-                        }
-                        console.log ('CHANGED STATUS TO EMAIL SENT');
+                    if (updatePaymentStatusError) {
+                        console.error('UPDATE PAYMENT STATUS ERROR', updatePaymentStatusError);
+                        throw error(500, 'Error updating payment status.');
                     }
+                    console.log ('CHANGED STATUS TO EMAIL SENT');
+                    
                 });
             }
 
