@@ -37,18 +37,34 @@ export const actions = {
             throw error(500, 'Error retrieving event data.');
         }
 
-        const { data: payments, error: retrievePaymentsError } = await supabase
-        .from('payments')
-        .select('id, event_identifier, status, client_info')
-        .match({
-            event_identifier: eventIdentifier,
-            'client_info->>legal_id_type': legalIdType,
-            'client_info->>legal_id': legalIdNumber
-        });
+        if(eventIdentifier === EventIdentifiers.Convivio){
+            const { data: payments, error: retrievePaymentsError } = await supabase
+            .from('payments')
+            .select('id, event_identifier, status, client_info')
+            .match({
+                event_identifier: eventIdentifier,
+                'client_info->>legal_id_type': legalIdType,
+                'client_info->>legal_id_number': legalIdNumber
+            });
 
-        if (retrievePaymentsError) {
-            console.error('RETRIEVE PAYMENTS ERROR', retrievePaymentsError);
-            throw error(500, 'Error retrieving payments.');
+            if (retrievePaymentsError) {
+                console.error('RETRIEVE PAYMENTS ERROR', retrievePaymentsError);
+                throw error(500, 'Error retrieving payments.');
+            }
+        else {
+            const { data: payments, error: retrievePaymentsError } = await supabase
+            .from('payments')
+            .select('id, event_identifier, status, client_info')
+            .match({
+                event_identifier: eventIdentifier,
+                'client_info->>legal_id_type': legalIdType,
+                'client_info->>legal_id': legalIdNumber
+            });
+
+            if (retrievePaymentsError) {
+                console.error('RETRIEVE PAYMENTS ERROR', retrievePaymentsError);
+                throw error(500, 'Error retrieving payments.');
+            }
         }
 
         console.log(payments);
