@@ -112,6 +112,7 @@ export const actions = {
                             console.error('UPDATE PAYMENT STATUS ERROR', updatePaymentStatusError);
                             throw error(500, 'Error updating payment status.');
                         }
+                        console.log ('CHANGED STATUS TO EMAIL SENT');
                     }
                 });
             }
