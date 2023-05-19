@@ -87,7 +87,7 @@ export const actions = {
         }
 
         payments.forEach(async (payment) => {
-            if (payment.status != PaymentStatus.Declined || payment.status != PaymentStatus.Pending) {
+            if (payment.status != PaymentStatus.Declined && payment.status != PaymentStatus.Pending) {
                 await sendConfirmationEmail(
                     payment.id,
                     verifiedSenderEmail,
