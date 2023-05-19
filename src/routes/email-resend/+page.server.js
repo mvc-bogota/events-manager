@@ -100,6 +100,7 @@ export const actions = {
                     eventObject.event_dates,
                     eventObject.event_time
                 ).then(async () => {
+                    console.log ('CURRENT STATUS: ' + payment.status);
                     if (payment.status == PaymentStatus.Approved) {
                         const { error: updatePaymentStatusError } = await supabase
                         .from('payments')
